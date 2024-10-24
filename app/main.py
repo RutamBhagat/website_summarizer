@@ -2,7 +2,6 @@ import sentry_sdk
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from starlette.middleware.cors import CORSMiddleware
-
 from app.api.main import api_router
 from app.core.config import settings
 
@@ -10,6 +9,7 @@ from app.core.config import settings
 from app.core.db import init_db
 from sqlmodel import Session
 from app.core.db import engine
+import os
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:
@@ -39,8 +39,13 @@ if settings.all_cors_origins:
 
 # add a root and healthcheck route
 @app.get("/")
-def root_route():
+async def root_route():
     return {"message": "Welcome to the FastAPI app!"}
+
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
 
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
