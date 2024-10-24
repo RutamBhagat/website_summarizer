@@ -16,7 +16,7 @@ def create_summary(
     *,
     session: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-    summary_in: WebsiteSummaryCreate
+    summary_in: WebsiteSummaryCreate,
 ) -> Any:
     """
     Create website summary for authenticated user.

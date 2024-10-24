@@ -11,8 +11,11 @@ from app.core.db import init_db
 from sqlmodel import Session
 from app.core.db import engine
 
+
 def custom_generate_unique_id(route: APIRoute) -> str:
-    return f"{route.tags[0]}-{route.name}"
+    tag = route.tags[0] if route.tags else "default"
+    return f"{tag}-{route.name}"
+
 
 if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
     sentry_sdk.init(dsn=str(settings.SENTRY_DSN), enable_tracing=True)
@@ -33,7 +36,15 @@ if settings.all_cors_origins:
         allow_headers=["*"],
     )
 
+
+# add a root and healthcheck route
+@app.get("/")
+def root_route():
+    return {"message": "Welcome to the FastAPI app!"}
+
+
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
 
 # Add database initialization to startup
 @app.on_event("startup")
