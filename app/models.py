@@ -45,7 +45,6 @@ class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
-
     summaries: list["WebsiteSummary"] = Relationship(
         back_populates="owner", cascade_delete=True
     )
@@ -61,36 +60,34 @@ class UsersPublic(SQLModel):
     count: int
 
 
-# Shared properties
+# Modified Item models
 class ItemBase(SQLModel):
     title: str = Field(min_length=1, max_length=255)
     description: str | None = Field(default=None, max_length=255)
 
 
-# Properties to receive on item creation
 class ItemCreate(ItemBase):
     pass
 
 
-# Properties to receive on item update
 class ItemUpdate(ItemBase):
     title: str | None = Field(default=None, min_length=1, max_length=255)  # type: ignore
 
 
-# Database model, database table inferred from class name
 class Item(ItemBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     title: str = Field(max_length=255)
-    owner_id: uuid.UUID = Field(
-        foreign_key="user.id", nullable=False, ondelete="CASCADE"
+    owner_id: uuid.UUID | None = Field(  # Made nullable
+        foreign_key="user.id",
+        nullable=True,  # Changed from False to True
+        ondelete="CASCADE",
     )
     owner: User | None = Relationship(back_populates="items")
 
 
-# Properties to return via API, id is always required
 class ItemPublic(ItemBase):
     id: uuid.UUID
-    owner_id: uuid.UUID
+    owner_id: uuid.UUID | None  # Made optional
 
 
 class ItemsPublic(SQLModel):
@@ -119,27 +116,26 @@ class NewPassword(SQLModel):
     new_password: str = Field(min_length=8, max_length=40)
 
 
-# Shared properties
+# Modified Website Summary models
 class WebsiteSummaryBase(SQLModel):
-    url: str = Field(max_length=2048, index=True)  # Standard max URL length
+    url: str = Field(max_length=2048, index=True)
     title: str = Field(max_length=255)
     summary: str | None = Field(default=None)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
-# Database model
 class WebsiteSummary(WebsiteSummaryBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
+    owner_id: uuid.UUID | None = Field(  # Made nullable
+        foreign_key="user.id", nullable=True  # Changed from False to True
+    )
     owner: User | None = Relationship(back_populates="summaries")
 
 
-# API response model
 class WebsiteSummaryPublic(WebsiteSummaryBase):
     id: uuid.UUID
-    owner_id: uuid.UUID
+    owner_id: uuid.UUID | None  # Made optional
 
 
-# Create model
 class WebsiteSummaryCreate(SQLModel):
     url: str = Field(max_length=2048)
