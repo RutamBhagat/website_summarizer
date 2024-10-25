@@ -103,5 +103,15 @@ def get_public_summaries(
     ).all()
 
 
+def get_public_summary_by_id(
+    *, session: Session, summary_id: uuid.UUID
+) -> WebsiteSummary | None:
+    return session.exec(
+        select(WebsiteSummary)
+        .where(WebsiteSummary.id == summary_id)
+        .where(WebsiteSummary.owner_id.is_(None))  # Ensure it's a public summary
+    ).first()
+
+
 def get_all_items(*, session: Session, skip: int = 0, limit: int = 100) -> list[Item]:
     return session.exec(select(Item).offset(skip).limit(limit)).all()

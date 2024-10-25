@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 from typing import Any
@@ -85,3 +86,16 @@ def read_public_summaries(
     """
     summaries = crud.get_public_summaries(session=session, skip=skip, limit=limit)
     return summaries
+
+
+@router.get("/public/summaries/{summary_id}", response_model=WebsiteSummaryPublic)
+def get_public_summary_by_id(
+    *, session: Session = Depends(get_db), summary_id: UUID
+) -> WebsiteSummaryPublic:
+    """
+    Retrieve a public summary by its ID.
+    """
+    summary = crud.get_public_summary_by_id(session=session, summary_id=summary_id)
+    if not summary:
+        raise HTTPException(status_code=404, detail="Summary not found")
+    return summary
