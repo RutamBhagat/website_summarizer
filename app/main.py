@@ -54,5 +54,6 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 # Add database initialization to startup
 @app.on_event("startup")
 async def on_startup():
+    print("CORS Origins:", settings.all_cors_origins)  # Debug print
     with Session(engine) as session:
         init_db(session)
