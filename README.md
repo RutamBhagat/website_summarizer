@@ -9,7 +9,7 @@ Transform any webpage into a concise summary with AI. Save hours of reading in s
 
 ## Demo Video
 
-[Placeholder for Demo Video]
+https://github.com/user-attachments/assets/009138ba-e953-4cb8-960c-b59688e5ed10
 
 ---
 
