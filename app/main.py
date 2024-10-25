@@ -45,6 +45,11 @@ async def root_route():
     return {"message": "Welcome to the FastAPI app!"}
 
 
+@app.head("/")
+async def root_head():
+    return {"message": "This is a HEAD request"}
+
+
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
