@@ -1,7 +1,9 @@
-# app/models/user/schema.py
+# app/models/user.py
+from typing import List, Optional
 from pydantic import EmailStr
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 import uuid
+from .base import BaseModel
 
 
 class UserBase(SQLModel):
@@ -9,6 +11,21 @@ class UserBase(SQLModel):
     is_active: bool = True
     is_superuser: bool = False
     full_name: str | None = Field(default=None, max_length=255)
+
+
+class User(BaseModel, table=True):
+    email: EmailStr = Field(unique=True, index=True, max_length=255)
+    hashed_password: str
+    is_active: bool = True
+    is_superuser: bool = False
+    full_name: str | None = Field(default=None, max_length=255)
+
+    items: List["Item"] = Relationship(
+        back_populates="owner", sa_relationship_kwargs={"lazy": "selectin"}
+    )
+    website_summaries: List["WebsiteSummary"] = Relationship(
+        back_populates="owner", sa_relationship_kwargs={"lazy": "selectin"}
+    )
 
 
 class UserCreate(UserBase):

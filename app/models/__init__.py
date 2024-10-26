@@ -1,7 +1,8 @@
 # app/models/__init__.py
-from .common.schema import Message
-from .user.model import User
-from .user.schema import (
+from .base import BaseModel, TimestampModel
+from .common import Message
+from .user import (
+    User,
     UserBase,
     UserCreate,
     UserUpdate,
@@ -10,17 +11,19 @@ from .user.schema import (
     UsersPublic,
     UserRegister,
 )
-from .item.model import Item
-from .item.schema import ItemBase, ItemCreate, ItemUpdate, ItemPublic, ItemsPublic
-from .website.model import WebsiteSummary
-from .website.schema import (
+from .item import Item, ItemBase, ItemCreate, ItemUpdate, ItemPublic, ItemsPublic
+from .website import (
+    WebsiteSummary,
     WebsiteSummaryBase,
     WebsiteSummaryCreate,
     WebsiteSummaryPublic,
 )
-from .auth.schema import Token, TokenPayload, UpdatePassword, NewPassword
+from .auth import Token, TokenPayload, UpdatePassword, NewPassword
 
 __all__ = [
+    # Base models
+    "BaseModel",
+    "TimestampModel",
     # Common models
     "Message",
     # User models

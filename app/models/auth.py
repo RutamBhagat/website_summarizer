@@ -1,4 +1,4 @@
-# app/models/auth/schema.py
+# app/models/auth.py
 from pydantic import Field
 from sqlmodel import SQLModel
 import uuid

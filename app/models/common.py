@@ -1,3 +1,4 @@
+# app/models/common.py
 from sqlmodel import SQLModel
 
 
