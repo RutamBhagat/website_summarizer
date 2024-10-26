@@ -26,6 +26,11 @@ def test_email(email_to: EmailStr) -> Message:
     return Message(message="Test email sent")
 
 
+@router.head("/uptime-robot/")
+async def root_head():
+    return {"message": "This is a HEAD request to uptime robot"}
+
+
 @router.get("/health-check/")
 async def health_check() -> bool:
     return True
