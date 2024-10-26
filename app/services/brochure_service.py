@@ -1,4 +1,3 @@
-# app/services/brochure_service.py
 from typing import List, Dict, Optional, AsyncGenerator
 import uuid
 import requests
@@ -147,6 +146,7 @@ class BrochureService:
             user_prompt += "use this information to build a short brochure of the company in markdown.\n"
             user_prompt += self._get_all_details(url)
 
+            # Create the stream
             stream = self.openai_client.chat.completions.create(
                 model=settings.OPENAI_MODEL,
                 messages=[
@@ -156,7 +156,8 @@ class BrochureService:
                 stream=True,
             )
 
-            async for chunk in stream:
+            # Yield chunks synchronously but wrapped in an async generator
+            for chunk in stream:
                 if content := chunk.choices[0].delta.content:
                     yield content
 
