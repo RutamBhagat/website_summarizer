@@ -5,7 +5,6 @@ from app.core.security import get_password_hash, verify_password
 from app.models import Item, ItemCreate, User, UserCreate, UserUpdate, WebsiteSummary
 
 
-# Authenticated functions (commented out)
 def create_user(*, session: Session, user_create: UserCreate) -> User:
     db_obj = User.model_validate(
         user_create, update={"hashed_password": get_password_hash(user_create.password)}
@@ -53,24 +52,25 @@ def create_item(*, session: Session, item_in: ItemCreate, owner_id: uuid.UUID) -
     return db_item
 
 
-# def create_website_summary(
-#     *, session: Session, url: str, title: str, summary: str, owner_id: uuid.UUID
-# ) -> WebsiteSummary:
-#     db_obj = WebsiteSummary(url=url, title=title, summary=summary, owner_id=owner_id)
-#     session.add(db_obj)
-#     session.commit()
-#     session.refresh(db_obj)
-#     return db_obj
+def create_website_summary(
+    *, session: Session, url: str, title: str, summary: str, owner_id: uuid.UUID
+) -> WebsiteSummary:
+    db_obj = WebsiteSummary(url=url, title=title, summary=summary, owner_id=owner_id)
+    session.add(db_obj)
+    session.commit()
+    session.refresh(db_obj)
+    return db_obj
 
-# def get_user_summaries(
-#     *, session: Session, owner_id: uuid.UUID, skip: int = 0, limit: int = 100
-# ) -> list[WebsiteSummary]:
-#     return session.exec(
-#         select(WebsiteSummary)
-#         .where(WebsiteSummary.owner_id == owner_id)
-#         .offset(skip)
-#         .limit(limit)
-#     ).all()
+
+def get_user_summaries(
+    *, session: Session, owner_id: uuid.UUID, skip: int = 0, limit: int = 100
+) -> list[WebsiteSummary]:
+    return session.exec(
+        select(WebsiteSummary)
+        .where(WebsiteSummary.owner_id == owner_id)
+        .offset(skip)
+        .limit(limit)
+    ).all()
 
 
 # New functions without authentication
