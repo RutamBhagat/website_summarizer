@@ -1,11 +1,12 @@
 from uuid import UUID
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from sqlalchemy.util import b
 from sqlmodel import Session
 from typing import Any
 
 from starlette.responses import StreamingResponse
 from app.api.deps import get_current_user, get_db
-from app import crud
+from app.crud import brochure as crud
 from app.models.brochure import BrochureCreate, BrochurePublic, BrochuresPublic
 from app.models.user import User
 from app.services.brochure_service import BrochureService

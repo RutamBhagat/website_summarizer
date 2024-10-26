@@ -4,7 +4,7 @@ from sqlmodel import Session
 from typing import Any
 
 from app.api.deps import get_current_user, get_db
-from app import crud
+from app.crud import website as crud
 from app.models.user import User
 from app.models.website import WebsiteSummaryCreate, WebsiteSummaryPublic
 from app.services.website_service import WebsiteService
