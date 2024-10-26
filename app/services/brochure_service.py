@@ -136,7 +136,7 @@ class BrochureService:
             )
 
     async def stream_brochure(
-        self, company_name: str, url: str, brochure_id: Optional[uuid.UUID] = None
+        self, company_name: str, url: str
     ) -> AsyncGenerator[str, None]:
         """Generate a company brochure with streaming response."""
         try:
@@ -156,14 +156,9 @@ class BrochureService:
                 stream=True,
             )
 
-            full_content = []
             async for chunk in stream:
                 if content := chunk.choices[0].delta.content:
-                    full_content.append(content)
                     yield content
-
-            # Return the full content for background processing
-            return "".join(full_content)
 
         except Exception as e:
             raise HTTPException(

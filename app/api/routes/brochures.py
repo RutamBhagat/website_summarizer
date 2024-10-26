@@ -88,14 +88,13 @@ async def create_streaming_brochure(
     )
 
     async def generate():
+        content = []
         try:
-            content = ""
             async for chunk in brochure_service.stream_brochure(
                 company_name=brochure_in.company_name,
                 url=brochure_in.url,
-                brochure_id=db_brochure.id,
             ):
-                content += chunk
+                content.append(chunk)
                 yield chunk
 
             # Update the brochure content after streaming is complete
@@ -103,7 +102,7 @@ async def create_streaming_brochure(
                 crud.update_brochure_content,
                 session=session,
                 brochure_id=db_brochure.id,
-                content=content,
+                content="".join(content),
             )
         except Exception as e:
             # Handle any errors during streaming
@@ -139,14 +138,13 @@ async def create_public_streaming_brochure(
     )
 
     async def generate():
+        content = []
         try:
-            content = ""
             async for chunk in brochure_service.stream_brochure(
                 company_name=brochure_in.company_name,
                 url=brochure_in.url,
-                brochure_id=db_brochure.id,
             ):
-                content += chunk
+                content.append(chunk)
                 yield chunk
 
             # Update the brochure content after streaming is complete
@@ -154,7 +152,7 @@ async def create_public_streaming_brochure(
                 crud.update_brochure_content,
                 session=session,
                 brochure_id=db_brochure.id,
-                content=content,
+                content="".join(content),
             )
         except Exception as e:
             # Handle any errors during streaming
