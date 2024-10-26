@@ -2,10 +2,9 @@
 import uuid
 from typing import Optional, List
 from sqlmodel import Session, select
-from app.models import (
-    WebsiteSummary,
-    Brochure,
-)
+
+from app.models.brochure import Brochure
+from app.models.website import WebsiteSummary
 
 
 # Existing Website Summary CRUD operations

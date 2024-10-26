@@ -5,9 +5,10 @@ from typing import Any
 
 from starlette.responses import StreamingResponse
 from app.api.deps import get_current_user, get_db
-from app.models import WebsiteSummaryCreate, WebsiteSummaryPublic, User
 from app import crud
-from app.models.website import BrochureCreate, BrochurePublic, BrochuresPublic
+from app.models.brochure import BrochureCreate, BrochurePublic, BrochuresPublic
+from app.models.user import User
+from app.models.website import WebsiteSummaryCreate, WebsiteSummaryPublic
 from app.services.brochure_service import BrochureService
 from app.services.website_service import WebsiteService
 

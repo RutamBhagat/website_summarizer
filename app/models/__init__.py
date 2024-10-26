@@ -19,6 +19,13 @@ from .website import (
     WebsiteSummaryPublic,
 )
 from .auth import Token, TokenPayload, UpdatePassword, NewPassword
+from .brochure import (  # Add this new import
+    Brochure,
+    BrochureBase,
+    BrochureCreate,
+    BrochurePublic,
+    BrochuresPublic,
+)
 
 __all__ = [
     # Base models
@@ -52,4 +59,10 @@ __all__ = [
     "TokenPayload",
     "UpdatePassword",
     "NewPassword",
+    # Brochure models
+    "Brochure",
+    "BrochureBase",
+    "BrochureCreate",
+    "BrochurePublic",
+    "BrochuresPublic",
 ]

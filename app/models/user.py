@@ -1,9 +1,14 @@
 # app/models/user.py
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel
 import uuid
 from .base import BaseModel
+
+if TYPE_CHECKING:
+    from .item import Item
+    from .website import WebsiteSummary
+    from .brochure import Brochure
 
 
 class UserBase(SQLModel):
@@ -14,6 +19,8 @@ class UserBase(SQLModel):
 
 
 class User(BaseModel, table=True):
+    __tablename__ = "user"
+
     email: EmailStr = Field(unique=True, index=True, max_length=255)
     hashed_password: str
     is_active: bool = True
@@ -24,6 +31,9 @@ class User(BaseModel, table=True):
         back_populates="owner", sa_relationship_kwargs={"lazy": "selectin"}
     )
     website_summaries: List["WebsiteSummary"] = Relationship(
+        back_populates="owner", sa_relationship_kwargs={"lazy": "selectin"}
+    )
+    brochures: List["Brochure"] = Relationship(
         back_populates="owner", sa_relationship_kwargs={"lazy": "selectin"}
     )
 
