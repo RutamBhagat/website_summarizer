@@ -64,6 +64,7 @@ def create_streaming_brochure(
     url: str,
     company_name: str,
     owner_id: Optional[uuid.UUID] = None,
+    status: str = "pending",
 ) -> Brochure:
     """Create an empty brochure that will be populated with content later"""
     db_obj = Brochure(
@@ -71,6 +72,7 @@ def create_streaming_brochure(
         company_name=company_name,
         content="",  # Start with empty content
         owner_id=owner_id,
+        status=status,
     )
     session.add(db_obj)
     session.commit()

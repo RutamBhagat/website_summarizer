@@ -9,6 +9,12 @@ if TYPE_CHECKING:
     from .user import User
 
 
+class BrochureStatus:
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
+
 class BrochureBase(SQLModel):
     url: str = Field(max_length=2048, index=True)
     company_name: str = Field(max_length=255)
@@ -28,6 +34,8 @@ class Brochure(TimestampModel, table=True):
     owner: Optional["User"] = Relationship(
         back_populates="brochures", sa_relationship_kwargs={"lazy": "selectin"}
     )
+    status: str = Field(default=BrochureStatus.PENDING)
+    error_message: str | None = Field(default=None)
 
 
 class BrochureCreate(SQLModel):

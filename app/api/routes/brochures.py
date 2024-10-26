@@ -1,6 +1,5 @@
-# app/api/routes/brochures.py
-
 from uuid import UUID
+from enum import Enum
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlmodel import Session
 from typing import Any
@@ -15,7 +14,47 @@ router = APIRouter()
 brochure_service = BrochureService()
 
 
-# New brochure endpoints
+class BrochureStatus(str, Enum):
+    PENDING = "pending"
+    PROCESSING = "processing"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+
+async def generate_and_save_brochure(
+    session: Session,
+    brochure_id: UUID,
+    company_name: str,
+    url: str,
+) -> None:
+    """Background task to generate and save brochure content"""
+    try:
+        brochure = crud.get_brochure_by_id(session=session, brochure_id=brochure_id)
+        if not brochure:
+            return
+
+        brochure.status = BrochureStatus.PROCESSING
+        session.add(brochure)
+        session.commit()
+
+        content = brochure_service.generate_brochure(
+            company_name=company_name,
+            url=url,
+        )
+
+        brochure.content = content
+        brochure.status = BrochureStatus.COMPLETED
+        session.add(brochure)
+        session.commit()
+
+    except Exception as e:
+        if brochure:
+            brochure.status = BrochureStatus.FAILED
+            brochure.error_message = str(e)
+            session.add(brochure)
+            session.commit()
+
+
 @router.post("/brochure", response_model=BrochurePublic)
 async def create_brochure(
     *,
@@ -26,13 +65,11 @@ async def create_brochure(
     """
     Create company brochure for authenticated user.
     """
-    # Generate brochure content
     content = brochure_service.generate_brochure(
         company_name=brochure_in.company_name,
         url=brochure_in.url,
     )
 
-    # Save to database
     db_brochure = crud.create_brochure(
         session=session,
         url=brochure_in.url,
@@ -52,13 +89,11 @@ async def create_public_brochure(
     """
     Create public company brochure without authentication.
     """
-    # Generate brochure content
     content = brochure_service.generate_brochure(
         company_name=brochure_in.company_name,
         url=brochure_in.url,
     )
 
-    # Save to database
     db_brochure = crud.create_brochure(
         session=session,
         url=brochure_in.url,
@@ -78,40 +113,42 @@ async def create_streaming_brochure(
 ) -> StreamingResponse:
     """
     Create company brochure with streaming response for authenticated user.
+    Streams content immediately while saving complete content in background.
     """
-    # Create empty brochure first
     db_brochure = crud.create_streaming_brochure(
         session=session,
         url=brochure_in.url,
         company_name=brochure_in.company_name,
         owner_id=current_user.id,
+        status=BrochureStatus.PENDING,
+    )
+
+    background_tasks.add_task(
+        generate_and_save_brochure,
+        session=session,
+        brochure_id=db_brochure.id,
+        company_name=brochure_in.company_name,
+        url=brochure_in.url,
     )
 
     async def generate():
-        content = []
         try:
             async for chunk in brochure_service.stream_brochure(
                 company_name=brochure_in.company_name,
                 url=brochure_in.url,
             ):
-                content.append(chunk)
                 yield chunk
 
-            # Update the brochure content after streaming is complete
-            background_tasks.add_task(
-                crud.update_brochure_content,
-                session=session,
-                brochure_id=db_brochure.id,
-                content="".join(content),
-            )
         except Exception as e:
-            # Handle any errors during streaming
-            background_tasks.add_task(
-                crud.update_brochure_content,
-                session=session,
-                brochure_id=db_brochure.id,
-                content=f"Error generating content: {str(e)}",
+            brochure = crud.get_brochure_by_id(
+                session=session, brochure_id=db_brochure.id
             )
+            if brochure:
+                brochure.status = BrochureStatus.FAILED
+                brochure.error_message = str(e)
+                session.add(brochure)
+                session.commit()
+
             raise HTTPException(
                 status_code=500,
                 detail=f"Failed to generate streaming brochure: {str(e)}",
@@ -130,38 +167,39 @@ async def create_public_streaming_brochure(
     """
     Create public company brochure with streaming response without authentication.
     """
-    # Create empty brochure first
     db_brochure = crud.create_streaming_brochure(
         session=session,
         url=brochure_in.url,
         company_name=brochure_in.company_name,
+        status=BrochureStatus.PENDING,
+    )
+
+    background_tasks.add_task(
+        generate_and_save_brochure,
+        session=session,
+        brochure_id=db_brochure.id,
+        company_name=brochure_in.company_name,
+        url=brochure_in.url,
     )
 
     async def generate():
-        content = []
         try:
             async for chunk in brochure_service.stream_brochure(
                 company_name=brochure_in.company_name,
                 url=brochure_in.url,
             ):
-                content.append(chunk)
                 yield chunk
 
-            # Update the brochure content after streaming is complete
-            background_tasks.add_task(
-                crud.update_brochure_content,
-                session=session,
-                brochure_id=db_brochure.id,
-                content="".join(content),
-            )
         except Exception as e:
-            # Handle any errors during streaming
-            background_tasks.add_task(
-                crud.update_brochure_content,
-                session=session,
-                brochure_id=db_brochure.id,
-                content=f"Error generating content: {str(e)}",
+            brochure = crud.get_brochure_by_id(
+                session=session, brochure_id=db_brochure.id
             )
+            if brochure:
+                brochure.status = BrochureStatus.FAILED
+                brochure.error_message = str(e)
+                session.add(brochure)
+                session.commit()
+
             raise HTTPException(
                 status_code=500,
                 detail=f"Failed to generate streaming brochure: {str(e)}",
@@ -235,3 +273,21 @@ async def get_public_brochure(
     if not brochure or brochure.owner_id is not None:
         raise HTTPException(status_code=404, detail="Brochure not found")
     return brochure
+
+
+@router.get("/brochures/{brochure_id}/status")
+async def get_brochure_status(
+    *,
+    session: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    brochure_id: UUID,
+) -> dict:
+    """
+    Get the current status of a brochure generation by ID.
+    """
+    brochure = crud.get_brochure_by_id(session=session, brochure_id=brochure_id)
+    if not brochure:
+        raise HTTPException(status_code=404, detail="Brochure not found")
+    if brochure.owner_id != current_user.id and not current_user.is_superuser:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+    return {"status": brochure.status, "error_message": brochure.error_message}
