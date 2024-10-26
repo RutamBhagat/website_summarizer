@@ -5,7 +5,7 @@ services:
     image: postgres:13
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changethis}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-randompassword}
       POSTGRES_DB: ${POSTGRES_DB:-app}
     ports:
       - "5432:5432"
