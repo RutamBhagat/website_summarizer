@@ -1,6 +1,6 @@
+# app/api/routes/brochures.py
 from uuid import UUID
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
-from sqlalchemy.util import b
 from sqlmodel import Session
 from typing import Any
 
@@ -79,26 +79,44 @@ async def create_streaming_brochure(
     """
     Create company brochure with streaming response for authenticated user.
     """
+    # Create empty brochure first
+    db_brochure = crud.create_streaming_brochure(
+        session=session,
+        url=brochure_in.url,
+        company_name=brochure_in.company_name,
+        owner_id=current_user.id,
+    )
 
     async def generate():
-        full_content = []
-        async for chunk in brochure_service.stream_brochure(
-            company_name=brochure_in.company_name,
-            url=brochure_in.url,
-        ):
-            full_content.append(chunk)
-            yield chunk
+        try:
+            content = ""
+            async for chunk in brochure_service.stream_brochure(
+                company_name=brochure_in.company_name,
+                url=brochure_in.url,
+                brochure_id=db_brochure.id,
+            ):
+                content += chunk
+                yield chunk
 
-        # Save the complete brochure after streaming
-        content = "".join(full_content)
-        background_tasks.add_task(
-            crud.create_brochure,
-            session=session,
-            url=brochure_in.url,
-            company_name=brochure_in.company_name,
-            content=content,
-            owner_id=current_user.id,
-        )
+            # Update the brochure content after streaming is complete
+            background_tasks.add_task(
+                crud.update_brochure_content,
+                session=session,
+                brochure_id=db_brochure.id,
+                content=content,
+            )
+        except Exception as e:
+            # Handle any errors during streaming
+            background_tasks.add_task(
+                crud.update_brochure_content,
+                session=session,
+                brochure_id=db_brochure.id,
+                content=f"Error generating content: {str(e)}",
+            )
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to generate streaming brochure: {str(e)}",
+            )
 
     return StreamingResponse(generate(), media_type="text/markdown")
 
@@ -113,25 +131,43 @@ async def create_public_streaming_brochure(
     """
     Create public company brochure with streaming response without authentication.
     """
+    # Create empty brochure first
+    db_brochure = crud.create_streaming_brochure(
+        session=session,
+        url=brochure_in.url,
+        company_name=brochure_in.company_name,
+    )
 
     async def generate():
-        full_content = []
-        async for chunk in brochure_service.stream_brochure(
-            company_name=brochure_in.company_name,
-            url=brochure_in.url,
-        ):
-            full_content.append(chunk)
-            yield chunk
+        try:
+            content = ""
+            async for chunk in brochure_service.stream_brochure(
+                company_name=brochure_in.company_name,
+                url=brochure_in.url,
+                brochure_id=db_brochure.id,
+            ):
+                content += chunk
+                yield chunk
 
-        # Save the complete brochure after streaming
-        content = "".join(full_content)
-        background_tasks.add_task(
-            crud.create_brochure,
-            session=session,
-            url=brochure_in.url,
-            company_name=brochure_in.company_name,
-            content=content,
-        )
+            # Update the brochure content after streaming is complete
+            background_tasks.add_task(
+                crud.update_brochure_content,
+                session=session,
+                brochure_id=db_brochure.id,
+                content=content,
+            )
+        except Exception as e:
+            # Handle any errors during streaming
+            background_tasks.add_task(
+                crud.update_brochure_content,
+                session=session,
+                brochure_id=db_brochure.id,
+                content=f"Error generating content: {str(e)}",
+            )
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to generate streaming brochure: {str(e)}",
+            )
 
     return StreamingResponse(generate(), media_type="text/markdown")
 

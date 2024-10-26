@@ -56,8 +56,8 @@ class BrochureService:
     def __init__(self):
         self.openai_client = OpenAI(api_key=settings.OPENAI_API_KEY)
         self.link_system_prompt = """
-            You are provided with a list of links found on a webpage. 
-            You are able to decide which of the links would be most relevant to include in a brochure about the company, 
+            You are provided with a list of links found on a webpage.
+            You are able to decide which of the links would be most relevant to include in a brochure about the company,
             such as links to an About page, or a Company page, or Careers/Jobs pages.
             You should respond in JSON as in this example:
             {
@@ -68,8 +68,8 @@ class BrochureService:
             }
         """
         self.brochure_system_prompt = """
-            You are an assistant that analyzes the contents of several relevant pages from a company website 
-            and creates a short brochure about the company for prospective customers, investors and recruits. 
+            You are an assistant that analyzes the contents of several relevant pages from a company website
+            and creates a short brochure about the company for prospective customers, investors and recruits.
             Respond in markdown. Include details of company culture, customers and careers/jobs if you have the information.
         """
 
@@ -79,8 +79,8 @@ class BrochureService:
             user_prompt = (
                 f"Here is the list of links on the website of {website.url} - "
             )
-            user_prompt += """please decide which of these are relevant web links for a brochure about the company, 
-                          respond with the full https URL in JSON format. 
+            user_prompt += """please decide which of these are relevant web links for a brochure about the company,
+                          respond with the full https URL in JSON format.
                           Do not include Terms of Service, Privacy, email links.\n"""
             user_prompt += "\n".join(website.links)
 
@@ -136,7 +136,7 @@ class BrochureService:
             )
 
     async def stream_brochure(
-        self, company_name: str, url: str
+        self, company_name: str, url: str, brochure_id: Optional[uuid.UUID] = None
     ) -> AsyncGenerator[str, None]:
         """Generate a company brochure with streaming response."""
         try:
@@ -156,9 +156,15 @@ class BrochureService:
                 stream=True,
             )
 
-            for chunk in stream:
+            full_content = []
+            async for chunk in stream:
                 if content := chunk.choices[0].delta.content:
+                    full_content.append(content)
                     yield content
+
+            # Return the full content for background processing
+            return "".join(full_content)
+
         except Exception as e:
             raise HTTPException(
                 status_code=500,

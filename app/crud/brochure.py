@@ -56,3 +56,40 @@ def count_brochures(*, session: Session, owner_id: Optional[uuid.UUID] = None) -
     else:
         query = query.where(Brochure.owner_id.is_(None))
     return session.exec(query).count()
+
+
+def create_streaming_brochure(
+    *,
+    session: Session,
+    url: str,
+    company_name: str,
+    owner_id: Optional[uuid.UUID] = None,
+) -> Brochure:
+    """Create an empty brochure that will be populated with content later"""
+    db_obj = Brochure(
+        url=url,
+        company_name=company_name,
+        content="",  # Start with empty content
+        owner_id=owner_id,
+    )
+    session.add(db_obj)
+    session.commit()
+    session.refresh(db_obj)
+    return db_obj
+
+
+def update_brochure_content(
+    *,
+    session: Session,
+    brochure_id: uuid.UUID,
+    content: str,
+) -> Brochure:
+    """Update the content of an existing brochure"""
+    brochure = get_brochure_by_id(session=session, brochure_id=brochure_id)
+    if not brochure:
+        raise ValueError("Brochure not found")
+    brochure.content = content
+    session.add(brochure)
+    session.commit()
+    session.refresh(brochure)
+    return brochure
