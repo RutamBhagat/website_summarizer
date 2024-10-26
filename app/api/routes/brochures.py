@@ -3,7 +3,8 @@ from enum import Enum
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlmodel import Session
 from typing import Any
-from starlette.responses import StreamingResponse
+from fastapi.responses import StreamingResponse
+
 from app.api.deps import get_current_user, get_db
 from app.crud import brochure as crud
 from app.models.brochure import BrochureCreate, BrochurePublic, BrochuresPublic
