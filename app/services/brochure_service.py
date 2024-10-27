@@ -135,6 +135,7 @@ class BrochureService:
                 status_code=500, detail=f"Failed to generate brochure: {str(e)}"
             )
 
+    # Server-side stream_brochure method
     async def stream_brochure(
         self, company_name: str, url: str
     ) -> AsyncGenerator[str, None]:
@@ -147,7 +148,6 @@ class BrochureService:
             user_prompt += "use this information to build a short brochure of the company in markdown.\n"
             user_prompt += self._get_all_details(url)
 
-            # Create the stream
             stream = self.openai_client.chat.completions.create(
                 model=settings.OPENAI_MODEL,
                 messages=[
@@ -157,19 +157,19 @@ class BrochureService:
                 stream=True,
             )
 
-            # Stream the response using SSE format
+            response = ""
             for chunk in stream:
                 if content := chunk.choices[0].delta.content:
-                    # Format as SSE with proper JSON encoding
-                    yield f"data: {json.dumps(content)}\n\n"
+                    response += content
+                    # Remove markdown code blocks if present
+                    response = response.replace("```", "").replace("markdown", "")
+                    # Encode newlines for SSE transmission
+                    encoded_content = content.replace("\n", "\\n")
+                    yield f"data: {encoded_content}\n\n"
 
-            # Send stream termination signal
             yield "data: [DONE]\n\n"
-
         except Exception as e:
-            # Format error as SSE
-            error_message = json.dumps({"error": str(e)})
-            yield f"data: {error_message}\n\n"
+            yield f"data: error: {str(e)}\n\n"
             yield "data: [DONE]\n\n"
             raise HTTPException(
                 status_code=500,
