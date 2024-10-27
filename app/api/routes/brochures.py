@@ -139,7 +139,7 @@ async def create_streaming_brochure(
             company_name=brochure_in.company_name,
             url=brochure_in.url,
         ),
-        media_type="text/event-stream",
+        media_type="text/plain",
     )
 
 
@@ -173,7 +173,7 @@ async def create_public_streaming_brochure(
             company_name=brochure_in.company_name,
             url=brochure_in.url,
         ),
-        media_type="text/event-stream",
+        media_type="text/plain",
     )
 
 

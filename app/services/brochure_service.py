@@ -135,7 +135,6 @@ class BrochureService:
                 status_code=500, detail=f"Failed to generate brochure: {str(e)}"
             )
 
-    # Server-side stream_brochure method
     async def stream_brochure(
         self, company_name: str, url: str
     ) -> AsyncGenerator[str, None]:
@@ -157,20 +156,11 @@ class BrochureService:
                 stream=True,
             )
 
-            response = ""
             for chunk in stream:
                 if content := chunk.choices[0].delta.content:
-                    response += content
-                    # Remove markdown code blocks if present
-                    response = response.replace("```", "").replace("markdown", "")
-                    # Encode newlines for SSE transmission
-                    encoded_content = content.replace("\n", "\\n")
-                    yield f"data: {encoded_content}\n\n"
+                    yield content
 
-            yield "data: [DONE]\n\n"
         except Exception as e:
-            yield f"data: error: {str(e)}\n\n"
-            yield "data: [DONE]\n\n"
             raise HTTPException(
                 status_code=500,
                 detail=f"Failed to generate streaming brochure: {str(e)}",
