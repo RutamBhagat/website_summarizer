@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:2bf414c7ce4ff1599b1b79570db6165c3fffad033ca67c1eb15667f917e74a0c"
+content_hash = "sha256:73b8a692f3e8554b2e0f1b75a0eae05d38c36d56cf0fbedae1feaacac3a6cbf4"
 
 [[metadata.targets]]
 requires_python = "~=3.10"
@@ -57,6 +57,16 @@ dependencies = [
 files = [
     {file = "anyio-4.6.2.post1-py3-none-any.whl", hash = "sha256:6d170c36fba3bdd840c73d3868c1e777e33676a69c3a72cf0a0d5d6d8009b61d"},
     {file = "anyio-4.6.2.post1.tar.gz", hash = "sha256:4c8bc31ccdb51c7f7bd251f51c609e038d63e34219b44aa86e47576389880b4c"},
+]
+
+[[package]]
+name = "asyncio"
+version = "3.4.3"
+summary = "reference implementation of PEP 3156"
+groups = ["default"]
+files = [
+    {file = "asyncio-3.4.3-py3-none-any.whl", hash = "sha256:c4d18b22701821de07bd6aea8b53d21449ec0ec5680645e5317062ea21817d2d"},
+    {file = "asyncio-3.4.3.tar.gz", hash = "sha256:83360ff8bc97980e4ff25c964c7bd3923d333d177aa4f7fb736b019f26c7cb41"},
 ]
 
 [[package]]

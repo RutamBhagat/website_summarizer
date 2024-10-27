@@ -140,6 +140,10 @@ async def create_streaming_brochure(
             url=brochure_in.url,
         ),
         media_type="text/plain",
+        headers={
+            "Cache-Control": "no-cache",
+            "Transfer-Encoding": "chunked",
+        },
     )
 
 
@@ -174,6 +178,10 @@ async def create_public_streaming_brochure(
             url=brochure_in.url,
         ),
         media_type="text/plain",
+        headers={
+            "Cache-Control": "no-cache",
+            "Transfer-Encoding": "chunked",
+        },
     )
 
 

@@ -1,6 +1,6 @@
 # app/services/brochure_service.py
-from typing import List, Dict, Optional, AsyncGenerator
-import uuid
+from typing import List, Dict, AsyncGenerator
+import asyncio
 import requests
 import json
 from bs4 import BeautifulSoup
@@ -158,6 +158,10 @@ class BrochureService:
 
             for chunk in stream:
                 if content := chunk.choices[0].delta.content:
+                    # Remove this line in production
+                    await asyncio.sleep(
+                        0.05
+                    )  # Optional: control streaming pace, this is purely for demo purposes to show streaming on frontend
                     yield content
 
         except Exception as e:

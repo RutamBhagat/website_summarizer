@@ -23,6 +23,7 @@ dependencies = [
     "pyjwt<3.0.0,>=2.8.0",
     "bs4>=0.0.2",
     "openai>=1.52.2",
+    "asyncio>=3.4.3",
 ]
 
 [tool.uv]
