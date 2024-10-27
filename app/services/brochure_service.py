@@ -1,3 +1,4 @@
+# app/services/brochure_service.py
 from typing import List, Dict, Optional, AsyncGenerator
 import uuid
 import requests
@@ -111,7 +112,7 @@ class BrochureService:
 
         return result[:20_000]  # Truncate if more than 20,000 characters
 
-    def generate_brochure(self, company_name: str, url: str) -> str:
+    async def generate_brochure(self, company_name: str, url: str) -> str:
         """Generate a company brochure."""
         try:
             user_prompt = f"You are looking at a company called: {company_name}\n"
@@ -156,12 +157,20 @@ class BrochureService:
                 stream=True,
             )
 
-            # Yield chunks synchronously but wrapped in an async generator
+            # Stream the response using SSE format
             for chunk in stream:
                 if content := chunk.choices[0].delta.content:
-                    yield content
+                    # Format as SSE with proper JSON encoding
+                    yield f"data: {json.dumps(content)}\n\n"
+
+            # Send stream termination signal
+            yield "data: [DONE]\n\n"
 
         except Exception as e:
+            # Format error as SSE
+            error_message = json.dumps({"error": str(e)})
+            yield f"data: {error_message}\n\n"
+            yield "data: [DONE]\n\n"
             raise HTTPException(
                 status_code=500,
                 detail=f"Failed to generate streaming brochure: {str(e)}",

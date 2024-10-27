@@ -1,9 +1,11 @@
+# app/api/routes/brochures.py
 from uuid import UUID
 from enum import Enum
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlmodel import Session
 from typing import Any
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 
 from app.api.deps import get_current_user, get_db
 from app.crud import brochure as crud
@@ -38,7 +40,7 @@ async def generate_and_save_brochure(
         session.add(brochure)
         session.commit()
 
-        content = brochure_service.generate_brochure(
+        content = await brochure_service.generate_brochure(
             company_name=company_name,
             url=url,
         )
@@ -56,7 +58,7 @@ async def generate_and_save_brochure(
             session.commit()
 
 
-@router.post("/brochure", response_model=BrochurePublic)
+@router.post("/", response_model=BrochurePublic)
 async def create_brochure(
     *,
     session: Session = Depends(get_db),
@@ -66,7 +68,7 @@ async def create_brochure(
     """
     Create company brochure for authenticated user.
     """
-    content = brochure_service.generate_brochure(
+    content = await brochure_service.generate_brochure(
         company_name=brochure_in.company_name,
         url=brochure_in.url,
     )
@@ -81,7 +83,7 @@ async def create_brochure(
     return db_brochure
 
 
-@router.post("/public/brochure", response_model=BrochurePublic)
+@router.post("/public", response_model=BrochurePublic)
 async def create_public_brochure(
     *,
     session: Session = Depends(get_db),
@@ -90,7 +92,7 @@ async def create_public_brochure(
     """
     Create public company brochure without authentication.
     """
-    content = brochure_service.generate_brochure(
+    content = await brochure_service.generate_brochure(
         company_name=brochure_in.company_name,
         url=brochure_in.url,
     )
@@ -104,7 +106,7 @@ async def create_public_brochure(
     return db_brochure
 
 
-@router.post("/brochure/stream")
+@router.post("/stream")
 async def create_streaming_brochure(
     *,
     brochure_in: BrochureCreate,
@@ -132,33 +134,16 @@ async def create_streaming_brochure(
         url=brochure_in.url,
     )
 
-    async def generate():
-        try:
-            async for chunk in brochure_service.stream_brochure(
-                company_name=brochure_in.company_name,
-                url=brochure_in.url,
-            ):
-                yield chunk
-
-        except Exception as e:
-            brochure = crud.get_brochure_by_id(
-                session=session, brochure_id=db_brochure.id
-            )
-            if brochure:
-                brochure.status = BrochureStatus.FAILED
-                brochure.error_message = str(e)
-                session.add(brochure)
-                session.commit()
-
-            raise HTTPException(
-                status_code=500,
-                detail=f"Failed to generate streaming brochure: {str(e)}",
-            )
-
-    return StreamingResponse(generate(), media_type="text/markdown")
+    return StreamingResponse(
+        brochure_service.stream_brochure(
+            company_name=brochure_in.company_name,
+            url=brochure_in.url,
+        ),
+        media_type="text/event-stream",
+    )
 
 
-@router.post("/public/brochure/stream")
+@router.post("/public/stream")
 async def create_public_streaming_brochure(
     *,
     brochure_in: BrochureCreate,
@@ -183,33 +168,16 @@ async def create_public_streaming_brochure(
         url=brochure_in.url,
     )
 
-    async def generate():
-        try:
-            async for chunk in brochure_service.stream_brochure(
-                company_name=brochure_in.company_name,
-                url=brochure_in.url,
-            ):
-                yield chunk
-
-        except Exception as e:
-            brochure = crud.get_brochure_by_id(
-                session=session, brochure_id=db_brochure.id
-            )
-            if brochure:
-                brochure.status = BrochureStatus.FAILED
-                brochure.error_message = str(e)
-                session.add(brochure)
-                session.commit()
-
-            raise HTTPException(
-                status_code=500,
-                detail=f"Failed to generate streaming brochure: {str(e)}",
-            )
-
-    return StreamingResponse(generate(), media_type="text/markdown")
+    return StreamingResponse(
+        brochure_service.stream_brochure(
+            company_name=brochure_in.company_name,
+            url=brochure_in.url,
+        ),
+        media_type="text/event-stream",
+    )
 
 
-@router.get("/brochures", response_model=BrochuresPublic)
+@router.get("/", response_model=BrochuresPublic)
 async def list_user_brochures(
     session: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -229,7 +197,7 @@ async def list_user_brochures(
     return BrochuresPublic(data=brochures, count=count)
 
 
-@router.get("/public/brochures", response_model=BrochuresPublic)
+@router.get("/public", response_model=BrochuresPublic)
 async def list_public_brochures(
     session: Session = Depends(get_db),
     skip: int = 0,
@@ -243,7 +211,7 @@ async def list_public_brochures(
     return BrochuresPublic(data=brochures, count=count)
 
 
-@router.get("/brochures/{brochure_id}", response_model=BrochurePublic)
+@router.get("/{brochure_id}", response_model=BrochurePublic)
 async def get_brochure(
     *,
     session: Session = Depends(get_db),
@@ -261,7 +229,7 @@ async def get_brochure(
     return brochure
 
 
-@router.get("/public/brochures/{brochure_id}", response_model=BrochurePublic)
+@router.get("/public/{brochure_id}", response_model=BrochurePublic)
 async def get_public_brochure(
     *,
     session: Session = Depends(get_db),
@@ -276,7 +244,7 @@ async def get_public_brochure(
     return brochure
 
 
-@router.get("/brochures/{brochure_id}/status")
+@router.get("/{brochure_id}/status")
 async def get_brochure_status(
     *,
     session: Session = Depends(get_db),
