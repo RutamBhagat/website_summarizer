@@ -11,7 +11,6 @@ from .user import (
     UsersPublic,
     UserRegister,
 )
-from .item import Item, ItemBase, ItemCreate, ItemUpdate, ItemPublic, ItemsPublic
 from .website import (
     WebsiteSummary,
     WebsiteSummaryBase,
@@ -42,13 +41,6 @@ __all__ = [
     "UserPublic",
     "UsersPublic",
     "UserRegister",
-    # Item models
-    "Item",
-    "ItemBase",
-    "ItemCreate",
-    "ItemUpdate",
-    "ItemPublic",
-    "ItemsPublic",
     # Website models
     "WebsiteSummary",
     "WebsiteSummaryBase",

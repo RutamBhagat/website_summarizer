@@ -6,7 +6,6 @@ import uuid
 from .base import BaseModel
 
 if TYPE_CHECKING:
-    from .item import Item
     from .website import WebsiteSummary
     from .brochure import Brochure
 
@@ -27,9 +26,6 @@ class User(BaseModel, table=True):
     is_superuser: bool = False
     full_name: str | None = Field(default=None, max_length=255)
 
-    items: List["Item"] = Relationship(
-        back_populates="owner", sa_relationship_kwargs={"lazy": "selectin"}
-    )
     website_summaries: List["WebsiteSummary"] = Relationship(
         back_populates="owner", sa_relationship_kwargs={"lazy": "selectin"}
     )

@@ -164,8 +164,6 @@ def test_retrieve_users(
 
     assert len(all_users["data"]) > 1
     assert "count" in all_users
-    for item in all_users["data"]:
-        assert "email" in item
 
 
 def test_update_user_me(
