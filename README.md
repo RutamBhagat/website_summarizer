@@ -87,7 +87,3 @@ BrochureCraft’s development focused on:
 ## Contributing
 
 Contributions are welcome! Feel free to fork the repository, submit pull requests, or suggest ideas in the Issues section.
-
----
-
-Let me know if there’s anything specific you’d like added!
