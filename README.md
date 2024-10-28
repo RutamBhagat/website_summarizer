@@ -1,43 +1,33 @@
 # BrochureCraft: Instant Brochure & Website Summarizer
 
-BrochureCraft is an AI-powered tool designed to instantly generate professional brochures and insightful summaries from any webpage. With its user-friendly interface, BrochureCraft simplifies content extraction, providing businesses, marketers, and researchers with instant, shareable marketing materials.
+## Overview
+
+BrochureCraft is an AI-powered tool designed to instantly generate professional brochures and insightful summaries from any webpage. The project combines modern web technologies with AI capabilities to provide businesses, marketers, and researchers with instant, shareable marketing materials. The system features a FastAPI backend for efficient processing and a Next.js frontend for optimal user experience.
 
 **Backend:** [Website Summarizer API](https://website-summarizer-iorx.onrender.com/docs)  
 **Frontend:** [Instant Website Insights UI](https://website-summarizer-frontend.vercel.app)
-
----
 
 ## Demo Video
 
 https://github.com/user-attachments/assets/b2c0afad-f7ec-4f92-b6bb-253a9d911152
 
----
-
-## How It Works
-
-BrochureCraft offers two main tools:
-
-1. **Brochure Generator** – Converts website content into a well-organized, professional brochure format, ideal for prospective clients, investors, or new recruits.
-2. **Instant Summarizer** – Quickly extracts and summarizes key insights from any webpage.
-
 ## Key Features
 
-- **Professional Brochures**: Automatically arranges website content into a sleek brochure, emphasizing company culture, services, and career opportunities.
-- **Concise Summaries**: Summarizes webpage content, news, or announcements into a digestible, high-level overview.
-- **Streaming Responses**: Provides real-time feedback with a typewriter animation for a dynamic user experience.
+- **Brochure Generator**: Built an automated system that converts website content into well-organized, professional brochure formats using OpenAI integration.
+- **Instant Summarizer**: Developed a feature that quickly extracts and summarizes key insights from any webpage.
+- **Streaming Responses**: Implemented real-time feedback with typewriter animation for enhanced user experience.
+- **Content Filtering**: Created intelligent filtering mechanisms to remove irrelevant content and focus on meaningful website insights.
 
-## Tech Stack
+## Technologies Used
 
-- **Frontend**: Next.js, TailwindCSS, shadcn/ui components
-- **Backend**: FastAPI, Async processing
-- **AI Integration**: OpenAI for content generation
-- **Styling**: TailwindCSS for responsive design
-- **UI Components**: shadcn/ui for consistency and polish
+- **Frontend**: Next.js, TailwindCSS, shadcn/ui components for a responsive and polished user interface
+- **Backend**: FastAPI with async processing capabilities for efficient request handling
+- **AI Integration**: OpenAI API integration for advanced content generation and summarization
+- **Development Tools**: Git for version control, PDM for Python dependency management, Bun for JavaScript package management
 
-## Optimizations
+## Challenges and Learnings
 
-- **Responsive Design**: Developed with Next.js for optimized loading and a smooth user experience.
-- **Content Filtering**: Removes irrelevant content (e.g., navigation) to focus on meaningful website insights.
+A significant challenge was implementing efficient web scraping that could handle various website structures while maintaining fast response times. The solution involved optimizing async processing and creating robust parsing algorithms using beautifulsoup4. Additionally, integrating streaming responses with OpenAI's API required careful consideration of rate limits and error handling.
 
 ## Example Use Cases
 
@@ -61,11 +51,11 @@ BrochureCraft is perfect for:
 3. **Install Dependencies**
 
    ```bash
-   ##### for frontend
+   # for frontend
    cd website_summarizer_frontend
    npm i -g bun
    bun install
-   ##### for backend
+   # for backend
    cd ../website_summarizer
    pipx install pdm
    pdm install
@@ -77,20 +67,7 @@ BrochureCraft is perfect for:
    ##### for backend
    - Start the backend: `pdm run uvicorn app.main:app --reload`
 
-## Lessons Learned
+## Outcome
 
-BrochureCraft’s development focused on:
+BrochureCraft successfully provides a streamlined solution for generating marketing materials and content summaries. The application demonstrates significant efficiency improvements in content processing and presentation, making it valuable for marketing teams, sales professionals, and researchers who need quick access to well-formatted materials.```
 
-- **Efficient Web Scraping**: Parsing web content quickly and accurately using beautifulsoup4.
-- **Optimized Async Processing**: Managing asynchronous tasks for faster response times.
-- **UI & UX**: Crafting a clean, user-friendly interface that provides streaming feedback.
-
-## Future Enhancements
-
-- **Enhanced Web Compatibility**: Improve scraping for sites with dynamic content (e.g., React/SPA).
-- **Multi-Language Support**: Provide summaries and brochures in various languages.
-- **Template Customization**: Offer brochure style and format options.
-
-## Contributing
-
-Contributions are welcome! Feel free to fork the repository, submit pull requests, or suggest ideas in the Issues section.
