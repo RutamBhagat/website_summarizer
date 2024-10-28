@@ -9,7 +9,7 @@ BrochureCraft is an AI-powered tool designed to instantly generate professional 
 
 ## Demo Video
 
-https://github.com/user-attachments/assets/7ff6bcd0-960d-4189-80e9-7150ff507b69
+https://github.com/user-attachments/assets/b2c0afad-f7ec-4f92-b6bb-253a9d911152
 
 ---
 
