@@ -36,7 +36,6 @@ BrochureCraft offers two main tools:
 
 ## Optimizations
 
-- **API Efficiency**: Utilizes caching and rate limiting to balance performance and cost.
 - **Responsive Design**: Developed with Next.js for optimized loading and a smooth user experience.
 - **Content Filtering**: Removes irrelevant content (e.g., navigation) to focus on meaningful website insights.
 
@@ -52,29 +51,37 @@ BrochureCraft is perfect for:
 
 1. **Clone the Repositories**
    ```bash
-   git clone https://github.com/yourusername/brochurecraft-frontend
-   git clone https://github.com/yourusername/brochurecraft-backend
+   ##### for frontend
+   git clone https://github.com/RutamBhagat/website_summarizer_frontend
+   ##### for backend
+   git clone https://github.com/RutamBhagat/website_summarizer
    ```
 2. **Environment Setup**
    - Add your OpenAI API key in `.env` files in both repositories.
 3. **Install Dependencies**
 
    ```bash
-   cd brochurecraft-frontend
-   npm install
-   cd ../brochurecraft-backend
-   pip install -r requirements.txt
+   ##### for frontend
+   cd website_summarizer_frontend
+   npm i -g bun
+   bun install
+   ##### for backend
+   cd ../website_summarizer
+   pipx install pdm
+   pdm install
    ```
 
 4. **Run the Application**
-   - Start the backend: `uvicorn main:app --reload`
-   - Start the frontend: `npm run dev`
+   ##### for frontend
+   - Start the frontend: `bun run dev`
+   ##### for backend
+   - Start the backend: `pdm run uvicorn app.main:app --reload`
 
 ## Lessons Learned
 
 BrochureCraft’s development focused on:
 
-- **Efficient Web Scraping**: Parsing web content quickly and accurately.
+- **Efficient Web Scraping**: Parsing web content quickly and accurately using beautifulsoup4.
 - **Optimized Async Processing**: Managing asynchronous tasks for faster response times.
 - **UI & UX**: Crafting a clean, user-friendly interface that provides streaming feedback.
 
