@@ -159,9 +159,9 @@ class BrochureService:
             for chunk in stream:
                 if content := chunk.choices[0].delta.content:
                     # Remove this line in production
-                    await asyncio.sleep(
-                        0.05
-                    )  # Optional: control streaming pace, this is purely for demo purposes to show streaming on frontend
+                    # await asyncio.sleep(
+                    #     0.05
+                    # )  # Optional: control streaming pace, this is purely for demo purposes to show streaming on frontend
                     yield content
 
         except Exception as e:
