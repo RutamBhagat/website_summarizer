@@ -5,7 +5,9 @@
 BrochureCraft is an AI-powered tool designed to instantly generate professional brochures and insightful summaries from any webpage. The project combines modern web technologies with AI capabilities to provide businesses, marketers, and researchers with instant, shareable marketing materials. The system features a FastAPI backend for efficient processing and a Next.js frontend for optimal user experience.
 
 **Live** [Live Deployment](https://vercel.com/api/toolbar/link/website-summarizer-frontend.vercel.app)
-**Backend:** [Website Summarizer API](https://website-summarizer-iorx.onrender.com/docs)  
+
+**Backend:** [Website Summarizer API](https://website-summarizer-iorx.onrender.com/docs)
+
 **Frontend:** [Instant Website Insights UI](https://website-summarizer-frontend.vercel.app)
 
 ## Demo Video
