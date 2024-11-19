@@ -42,33 +42,55 @@ BrochureCraft is perfect for:
 
 ## Getting Started
 
-1. **Clone the Repositories**
-   ```bash
-   ##### for frontend
+### Prerequisites
+
+- Node.js 18+
+- Python 3.10+
+- Docker (optional)
+- Git
+
+### Frontend Setup
+
+```bash
+   # Clone repository
    git clone https://github.com/RutamBhagat/website_summarizer_frontend
-   ##### for backend
-   git clone https://github.com/RutamBhagat/website_summarizer
-   ```
-2. **Environment Setup**
-   - Add your OpenAI API key in `.env` files in both repositories.
-3. **Install Dependencies**
-
-   ```bash
-   # for frontend
    cd website_summarizer_frontend
-   npm i -g bun
-   bun install
-   # for backend
-   cd ../website_summarizer
-   pipx install pdm
-   pdm install
-   ```
 
-4. **Run the Application**
-   ##### for frontend
-   - Start the frontend: `bun run dev`
-   ##### for backend
-   - Start the backend: `pdm run uvicorn app.main:app --reload`
+   # Install dependencies
+   npm install
+
+   # Start development server
+   npm run dev
+```
+
+### Backend Setup
+
+```bash
+   # Backend
+   git clone https://github.com/RutamBhagat/website_summarizer
+   cd website_summarizer
+
+   pipx install pdm
+
+   pdm install
+
+   source .venv/bin/activate
+
+   pdm run uvicorn app.server:app --reload
+```
+
+#### If you want to setup using Docker
+
+```bash
+   # Remove the old container if present
+   docker rm website-summarizer-container
+
+   # Build the new image with no cache
+   docker build --no-cache -t website-summarizer-app .
+
+   # Run the container
+   docker run -d -p 8000:8000 --name website-summarizer-container website-summarizer-app
+```
 
 ## Outcome
 
