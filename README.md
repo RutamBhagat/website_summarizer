@@ -83,6 +83,7 @@ BrochureCraft is perfect for:
 
 ```bash
    # Remove the old container if present
+   docker stop website-summarizer-container
    docker rm website-summarizer-container
 
    # Build the new image with no cache
